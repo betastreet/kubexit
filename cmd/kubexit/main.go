@@ -29,6 +29,9 @@ func main() {
 	if logEnable == "" {
   	log.SetFlags(0)
   	log.SetOutput(ioutil.Discard)
+  	null,_ := os.Open(os.DevNull)
+  	os.Stdout = null
+  	os.Stderr = null
 	}
 
 	args := os.Args[1:]
