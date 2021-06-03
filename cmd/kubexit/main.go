@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -24,8 +25,16 @@ import (
 func main() {
 	var err error
 
-	// remove log timestamp
-	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+	logDebug := os.Getenv("KUBEXIT_DEBUG")
+	if logDebug == "" {
+	  	log.SetFlags(0)
+    	log.SetOutput(ioutil.Discard)
+    	null,_ := os.Open(os.DevNull)
+    	os.Stdout = null
+    	os.Stderr = null
+	} else if logDebug == "NO_TIMESTAMPS" {
+  	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+	}
 
 	args := os.Args[1:]
 	if len(args) == 0 {
