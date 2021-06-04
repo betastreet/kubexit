@@ -2,7 +2,8 @@ FROM golang:1.14.1-alpine3.11 AS builder
 RUN mkdir /build
 WORKDIR /build
 COPY . /build/
-RUN CGO_ENABLED=0 GOOS=linux go build -o kubexit ./cmd/kubexit
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o kubexit ./cmd/kubexit && \
+  apk add upx && upx --brute kubexit
 
 FROM alpine:3.11
 RUN apk --no-cache add ca-certificates tzdata
