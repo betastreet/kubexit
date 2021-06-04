@@ -28,12 +28,22 @@ func init() {
 		},
 	)
 
-	// use stdout instead of stderr for Kubernetes
-	DefaultLogger.SetOutput(os.Stdout)
-
-	// TODO: make configurable
-	// ignore debug by default
-	DefaultLogger.SetLevel(logrus.InfoLevel)
+	logLevel := os.Getenv("KUBEXIT_DEBUG")
+	if logLevel == "" {
+	  // disable logging by default
+    null,_ := os.Open(os.DevNull)
+    os.Stdout = null
+    os.Stderr = null
+    DefaultLogger.SetOutput(null)
+	} else {
+    // use stdout instead of stderr for Kubernetes
+    DefaultLogger.SetOutput(os.Stdout)
+    level, err := logrus.ParseLevel(logLevel)
+    if err != nil {
+      logrus.Fatal(err)
+    }
+    logrus.SetLevel(level)
+	}
 
 	L = logrus.NewEntry(DefaultLogger)
 }
